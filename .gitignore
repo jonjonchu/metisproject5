@@ -127,6 +127,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
-# client secret file
-client_secret_18574781039-jlqkt74gk3bpkpm3iienbv036389h8da.apps.googleusercontent.com.json
