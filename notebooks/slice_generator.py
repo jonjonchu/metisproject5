@@ -9,8 +9,8 @@ class slice_generator(Generator):
     input_images is of shape (1, slice_size, len(vars_), pixels_x, pixels_y)
     output_images is the same shape but starts immediately after end of input
     """
-    def __init__(self, img_dir, slice_size, vars_,
-                 proc_type, pixels_x, pixels_y, debug):
+    def __init__(self, img_dir:str, slice_size:int, vars_:list,
+                 proc_type:str, pixels_x:int, pixels_y:int, debug:bool):
         self.slice_size = slice_size
         self.vars_ = vars_
         self.proc_type = proc_type
@@ -25,6 +25,10 @@ class slice_generator(Generator):
         
         self._dataset_current = xr.open_dataset(self.netcdf_dirs[self._file_index])
         self._dataset_current = self._dataset_current[self.vars_]
+        
+        # Convert 2m temperature from Kelvin to deg C
+        if 't2m' in self.vars_:
+            self._dataset_current['t2m'] = self._dataset_current['t2m'] - 273.15
         
     def throw(self, type=None, value=None, traceback=None):
         raise StopIteration
@@ -59,14 +63,14 @@ class slice_generator(Generator):
                                       )
         
         self._counter += self.slice_size
-        return (input_images, output_images)
+        return ([input_images, output_images], output_images)
 
     def _get_slices(self,start:int, end:int):
         if self._debug == True:
             array = self._dataset_current.isel(time=slice(start, end))
             return array
         array = self._dataset_current.isel(time=slice(start, end)).to_array().values
-        if self.proc_type == "conv_lstm":
+        if self.proc_type == "convlstm":
             # switch first and second axes (in practice from (channels, frames, pixels_x, pixels_y) 
             # to (frames, channels, pixels_x, pixels_y) )
             array = np.moveaxis(array, 0, 1)
@@ -74,4 +78,4 @@ class slice_generator(Generator):
             array = array.reshape(-1, self.slice_size, len(self.vars_), self.pixels_x, self.pixels_y)
             return array
         else:
-            raise NameError("proc_type is not recognized. Try 'conv_lstm'")
+            raise NameError("proc_type is not recognized.")
