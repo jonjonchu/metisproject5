@@ -27,8 +27,8 @@ class slice_generator(Generator):
         self._dataset_current = self._dataset_current[self.vars_]
         
         # Convert 2m temperature from Kelvin to deg C
-        if 't2m' in self.vars_:
-            self._dataset_current['t2m'] = self._dataset_current['t2m'] - 273.15
+#         if 't2m' in self.vars_:
+#             self._dataset_current['t2m'] = self._dataset_current['t2m'] - 273.15
         
     def throw(self, type=None, value=None, traceback=None):
         raise StopIteration
