@@ -63,7 +63,9 @@ class slice_generator(Generator):
                                       )
         
         self._counter += self.slice_size
-        return ([input_images, output_images], output_images)
+        
+        concat_inputs = np.concatenate((input_images, output_images), axis=1, out=None)
+        return (concat_inputs, output_images)
 
     def _get_slices(self,start:int, end:int):
         if self._debug == True:
