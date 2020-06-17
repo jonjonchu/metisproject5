@@ -3,7 +3,7 @@ import glob
 import xarray as xr
 from collections.abc import Generator
 
-class slice_generator(Generator):
+class SliceGenerator(Generator):
     """
     A generator that returns a tuple (input_images, output_images), where
     input_images is of shape (1, slice_size, len(vars_), pixels_x, pixels_y)
@@ -58,14 +58,14 @@ class slice_generator(Generator):
             self._counter -= self.slice_size
         
         else:
-            output_images = self. _get_slices(start=self._counter + self.slice_size,
+            output_images = self._get_slices(start=self._counter + self.slice_size,
                                        end=self._counter + 2*self.slice_size,
                                       )
         
         self._counter += self.slice_size
         
-        concat_inputs = np.concatenate((input_images, output_images), axis=1, out=None)
-        return (concat_inputs, output_images)
+        
+        return (input_images, output_images)
 
     def _get_slices(self,start:int, end:int):
         if self._debug == True:
@@ -77,7 +77,7 @@ class slice_generator(Generator):
             # to (frames, channels, pixels_x, pixels_y) )
             array = np.moveaxis(array, 0, 1)
             # add empty dimension in front for ConvLSTMs
-            array = array.reshape(-1, self.slice_size, len(self.vars_), self.pixels_x, self.pixels_y)
+            #array = array.reshape(-1, self.slice_size, len(self.vars_), self.pixels_x, self.pixels_y)
             return array
         else:
             raise NameError("proc_type is not recognized.")
